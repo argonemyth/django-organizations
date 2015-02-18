@@ -133,8 +133,7 @@ class OrganizationBase(six.with_metaclass(OrgMeta, UnicodeMixin, models.Model)):
     the owner user.
     """
 
-    name = models.CharField(max_length=200,
-            help_text=_("The name of the organization"))
+    name = models.CharField(max_length=200, db_index=True)
     email = models.EmailField(verbose_name=_('email'),
                               max_length=255,
                               db_index=True)

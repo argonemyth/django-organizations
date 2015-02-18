@@ -20,7 +20,7 @@ class OrganizationForm(forms.ModelForm):
 
     class Meta:
         model = Organization
-        exclude = ('users', 'is_active')
+        exclude = ('slug', 'users', 'is_active')
 
     def save(self, commit=True):
         if self.instance.owner.organization_user != self.cleaned_data['owner']:
@@ -96,22 +96,25 @@ class OrganizationAddForm(forms.ModelForm):
     Form class for creating a new organization, complete with new owner, including a
     User instance, OrganizationUser instance, and OrganizationOwner instance.
     """
-    email = forms.EmailField(max_length=75,
-            help_text=_("The email address for the account owner"))
 
     def __init__(self, request, *args, **kwargs):
         self.request = request
         super(OrganizationAddForm, self).__init__(*args, **kwargs)
+        # pre-fill the email with user's email address
+        if request.user:
+            self.fields['email'].initial = request.user.email
 
     class Meta:
         model = Organization
-        exclude = ('users', 'is_active')
+        exclude = ('slug', 'users', 'is_active',)
 
     def save(self, **kwargs):
         """
         Create the organization, then get the user, then make the owner.
         """
         is_active = True
+        user = self.request.user
+        """
         try:
             user = get_user_model().objects.get(email=self.cleaned_data['email'])
         except get_user_model().DoesNotExist:
@@ -121,8 +124,11 @@ class OrganizationAddForm(forms.ModelForm):
                         'organization': self.cleaned_data['name'],
                         'sender': self.request.user, 'created': True})
             is_active = False
+        """
         return create_organization(user, self.cleaned_data['name'],
-                self.cleaned_data['slug'], is_active=is_active)
+                                   slug=None, is_active=is_active,
+                                   org_defaults={"email": self.cleaned_data['email']},
+                                   org_user_defaults={"is_admin": True})
 
 
 class SignUpForm(forms.Form):
