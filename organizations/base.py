@@ -135,6 +135,9 @@ class OrganizationBase(six.with_metaclass(OrgMeta, UnicodeMixin, models.Model)):
 
     name = models.CharField(max_length=200,
             help_text=_("The name of the organization"))
+    email = models.EmailField(verbose_name=_('email'),
+                              max_length=255,
+                              db_index=True)
     is_active = models.BooleanField(default=True)
 
     objects = OrgManager()
