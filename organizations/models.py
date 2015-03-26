@@ -150,7 +150,9 @@ class Organization(OrganizationBase, TimeStampedModel):
 
 
 class OrganizationUser(OrganizationUserBase, TimeStampedModel):
+
     is_admin = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=False)
 
     class Meta(OrganizationUserBase.Meta):
         verbose_name = _("organization user")
@@ -180,6 +182,21 @@ class OrganizationUser(OrganizationUserBase, TimeStampedModel):
     def get_absolute_url(self):
         return reverse('organization_user_detail', kwargs={
             'organization_pk': self.organization.pk, 'user_pk': self.user.pk})
+
+    def save(self, *args, **kwargs):
+        '''
+        For each user, only one oranization should be active at a time.
+        '''
+        if self.is_active:
+            try:
+                currently_active = self.__class__.objects.filter(user=self.user).get(is_active=True)
+            except self.__class__.DoesNotExist:
+                print "In save function: No org is active"
+                pass
+            else:
+                currently_active.is_active = False
+                currently_active.save()
+        return super(OrganizationUser, self).save(*args, **kwargs)
 
 
 class OrganizationOwner(OrganizationOwnerBase, TimeStampedModel):

@@ -15,8 +15,9 @@ class OrganizationAdmin(admin.ModelAdmin):
 
 
 class OrganizationUserAdmin(admin.ModelAdmin):
-    list_display = ['user', 'organization', 'is_admin']
+    list_display = ['user', 'organization', 'is_admin', 'is_active']
     raw_id_fields = ('user', 'organization')
+    ordering = ('user', )
 
 
 class OrganizationOwnerAdmin(admin.ModelAdmin):
