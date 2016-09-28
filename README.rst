@@ -31,6 +31,11 @@ functionality beyond the individual user.
 Documentation is on `Read the Docs
 <http://django-organizations.readthedocs.org/en/latest/index.html>`_
 
+Branch Modification
+===================
+
+In this branch, an owner could have multiple organizations.
+
 Installing
 ==========
 
